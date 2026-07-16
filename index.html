@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conectar WhatsApp Business</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 360px;
+    padding: 40px 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+    text-align: center;
+  }
+
+  .card h1 {
+    font-size: 20px;
+    margin: 0 0 8px;
+    color: #111;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 24px;
+  }
+
+  #connect-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #25D366;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  #connect-btn:hover {
+    background-color: #1ebe5a;
+  }
+
+  #connect-btn:disabled {
+    background-color: #9adfb6;
+    cursor: not-allowed;
+  }
+
+  #status {
+    margin-top: 20px;
+    font-size: 14px;
+    word-break: break-all;
+  }
+
+  #status.success {
+    color: #1a7a3c;
+  }
+
+  #status.error {
+    color: #c0392b;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Conectá tu WhatsApp Business</h1>
+    <p>Vinculá tu cuenta de WhatsApp Business para empezar a usar la integración.</p>
+    <button id="connect-btn">Conectar WhatsApp</button>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: '1560029056766221',
+        cookie: true,
+        xfbml: true,
+        version: 'v23.0'
+      });
+    };
+  </script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js"></script>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const btn = document.getElementById('connect-btn');
+
+    function setStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = type || '';
+    }
+
+    function fbLoginCallback(response) {
+      if (response.authResponse && response.authResponse.code) {
+        const code = response.authResponse.code;
+        console.log('Código recibido:', code);
+        setStatus('Código recibido: ' + code, 'success');
+      } else {
+        console.log('Login fallido o cancelado:', response);
+        setStatus('El proceso fue cancelado o falló.', 'error');
+      }
+    }
+
+    btn.addEventListener('click', function () {
+      FB.login(fbLoginCallback, {
+        config_id: '1348930430769250',
+        response_type: 'code',
+        override_default_response_type: true,
+        extras: {
+          setup: {},
+          featureType: '',
+          sessionInfoVersion: '3'
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
