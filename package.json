@@ -1,0 +1,7 @@
+{
+  "name": "starlings-whatsapp-signup",
+  "private": true,
+  "dependencies": {
+    "@vercel/kv": "^1.0.1"
+  }
+}
