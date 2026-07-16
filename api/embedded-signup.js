@@ -6,7 +6,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { sessionId, code, waba_id, phone_number_id, client_name } = req.body || {};
+  const { sessionId, code, redirect_uri, waba_id, phone_number_id, client_name } = req.body || {};
 
   if (!sessionId) {
     return res.status(400).json({ error: 'sessionId is required' });
@@ -29,7 +29,8 @@ module.exports = async (req, res) => {
     const params = new URLSearchParams({
       client_id: appId,
       client_secret: appSecret,
-      code
+      code,
+      redirect_uri: redirect_uri || ''
     });
 
     const tokenResponse = await fetch(`https://graph.facebook.com/v23.0/oauth/access_token?${params.toString()}`, {

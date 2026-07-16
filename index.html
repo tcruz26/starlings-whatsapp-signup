@@ -151,6 +151,7 @@
         sendToBackend({
           sessionId,
           code,
+          redirect_uri: window.location.origin + window.location.pathname,
           client_name: clientNameInput.value.trim() || undefined
         })
           .then(function (res) {
