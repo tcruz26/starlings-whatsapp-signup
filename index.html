@@ -87,7 +87,6 @@
   <div class="card">
     <h1>Conectá tu WhatsApp Business</h1>
     <p>Vinculá tu cuenta de WhatsApp Business para empezar a usar la integración.</p>
-    <input id="client-name" type="text" placeholder="Nombre del cliente (opcional)" style="width:100%;padding:10px;margin-bottom:16px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
     <button id="connect-btn">Conectar WhatsApp</button>
     <div id="status"></div>
   </div>
@@ -107,60 +106,17 @@
   <script>
     const statusEl = document.getElementById('status');
     const btn = document.getElementById('connect-btn');
-    const clientNameInput = document.getElementById('client-name');
-    const sessionId = crypto.randomUUID();
 
     function setStatus(message, type) {
       statusEl.textContent = message;
       statusEl.className = type || '';
     }
 
-    function sendToBackend(payload) {
-      return fetch('/api/embedded-signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    }
-
-    window.addEventListener('message', function (event) {
-      if (!event.origin.endsWith('facebook.com')) return;
-
-      let data;
-      try {
-        data = JSON.parse(event.data);
-      } catch (e) {
-        return;
-      }
-
-      if (data.type === 'WA_EMBEDDED_SIGNUP' && data.event === 'FINISH') {
-        const { phone_number_id, waba_id } = data.data;
-        console.log('WA_EMBEDDED_SIGNUP:', data.data);
-        sendToBackend({ sessionId, waba_id, phone_number_id }).catch(function (err) {
-          console.error('Error al guardar waba_id/phone_number_id:', err);
-        });
-      }
-    });
-
     function fbLoginCallback(response) {
       if (response.authResponse && response.authResponse.code) {
         const code = response.authResponse.code;
         console.log('Código recibido:', code);
-        setStatus('Código recibido, guardando conexión...', 'success');
-
-        sendToBackend({
-          sessionId,
-          code,
-          client_name: clientNameInput.value.trim() || undefined
-        })
-          .then(function (res) {
-            if (!res.ok) throw new Error('Backend respondió con error');
-            setStatus('Conexión guardada correctamente.', 'success');
-          })
-          .catch(function (err) {
-            console.error('Error al guardar la conexión:', err);
-            setStatus('Código recibido, pero falló el guardado en el backend.', 'error');
-          });
+        setStatus('Código recibido: ' + code, 'success');
       } else {
         console.log('Login fallido o cancelado:', response);
         setStatus('El proceso fue cancelado o falló.', 'error');
